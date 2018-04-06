@@ -53,7 +53,7 @@ class nutanixApi(object):
         return data
 
 
-    def create_vm(self, body):
+    def vm_create(self, body):
         '''body consist at least below parameters:
             {"memory_mb": 1024, "name": "pida","num_vcpus": 1}
         '''
@@ -66,7 +66,7 @@ class nutanixApi(object):
         return data
 
 
-    def delete_vm(self, vm_uuid):
+    def vm_delete(self, vm_uuid):
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
@@ -74,12 +74,26 @@ class nutanixApi(object):
         data = s.delete(self.base_url + 'vms/%s' %vm_uuid, verify=False).json()
         return data
 
-    def delete_vm_snapshots(self, vm_uuid):
+
+    def vm_update(self, vm_uuid, body=None):
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
-        data = s.post(self.base_url + 'vms', json=body, verify=False).json()
+        try:
+            data = s.put(self.base_url + 'vms/%s' %vm_uuid, json=body, verify=False).json()
+        except Exception as e:
+            print e
+            data = s.put(self.base_url + 'vms/%s' %vm_uuid, json=body, verify=False)
+        return data
+
+
+    def vm_clone(self, vm_uuid, body=None):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/clone' %vm_uuid, json=body, verify=False).json()
         return data
 
 
@@ -129,6 +143,7 @@ class nutanixApi(object):
 #-----------> Snapshot Operations
 #####
     def get_snapshots(self, vm_uuid=None):
+        '''vm_uuid can be sent to see snapshots of vm'''
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
@@ -156,6 +171,7 @@ class nutanixApi(object):
             if snap.get('snapshot_name') == snapshot_name:
                 return snap
         return 'no matching snapshot name found'
+
 #-------------> Protection Domain Operations
 #####
     def get_protection_domains(self):
