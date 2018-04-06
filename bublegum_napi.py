@@ -35,6 +35,14 @@ class nutanixApi(object):
                 return vm['uuid']
         return 'no such vm'
 
+    def get_vm_list(self):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.get(self.base_url + 'vms', verify=False).json()
+        return data
+
 
     def get_vm(self, vm_uuid):
         requests.packages.urllib3.disable_warnings()
@@ -138,6 +146,16 @@ class nutanixApi(object):
         return data
 
 
+    def get_snapshot_by_name(self, snapshot_name):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.get(self.base_url + 'snapshots/', verify=False).json()
+        for snap in data['entities']:
+            if snap.get('snapshot_name') == snapshot_name:
+                return snap
+        return 'no matching snapshot name found'
 #-------------> Protection Domain Operations
 #####
     def get_protection_domains(self):
