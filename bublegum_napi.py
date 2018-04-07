@@ -99,7 +99,9 @@ class nutanixApi(object):
 
 
     def vm_disks_attach(self, vm_uuid, body):
-        ''' body(required) = nfo about the virtual disks or CD-Roms to be attached'''
+        ''' body(required) = info about the virtual disks or CD-Roms to be attached. VDisk size, and storage_container_id 
+        paramters are required.
+        vdisk size should be in bytes'''
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
@@ -107,6 +109,17 @@ class nutanixApi(object):
         data = s.post(self.base_url + 'vms/%s/disks/attach' %vm_uuid, json=body, verify=False).json()
         return data
 
+
+    def vm_disks_detach(self, vm_uuid, body):
+        ''' body(required) = info about the virtual disks or CD-Roms to be detached. At least disk UUID or combination 
+        of device index and adapter type must be provided.
+        '''
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/disks/detach' %vm_uuid, json=body, verify=False).json()
+        return data
 
 
     def vm_change_power_state(self, vm_uuid, power_state):
