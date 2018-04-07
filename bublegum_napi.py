@@ -89,12 +89,24 @@ class nutanixApi(object):
 
 
     def vm_clone(self, vm_uuid, body=None):
+        ''' body(optional) = clone machine parameters'''
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
         data = s.post(self.base_url + 'vms/%s/clone' %vm_uuid, json=body, verify=False).json()
         return data
+
+
+    def vm_disks_attach(self, vm_uuid, body):
+        ''' body(required) = nfo about the virtual disks or CD-Roms to be attached'''
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/disks/attach' %vm_uuid, json=body, verify=False).json()
+        return data
+
 
 
     def vm_change_power_state(self, vm_uuid, power_state):
