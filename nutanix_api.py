@@ -9,22 +9,15 @@ body = {"memory_mb": 1024, "name": "pida1","num_vcpus": 1}
 
 
 def main():
-  base_url = "https://10.64.34.85:9440/PrismGateway/services/rest/v2.0/" #FOR TASK ID, DOESN'T WORK WITH V1, SHOULD INPUT 2.0
+  base_url = "https://10.64.34.95:9440/PrismGateway/services/rest/v2.0/" #FOR TASK ID, DOESN'T WORK WITH V1, SHOULD INPUT 2.0
   #base_url = "https://10.64.34.85:9440/PrismGateway/services/rest/v1/"
   api = nutanixApi(base_url, 'admin', 'Nutanix/1234')
-  body = {
-  "vm_disks": [
-    { 
-      "disk_address": {
-        "device_bus": "SCSI",
-        "device_index": 0,
-      }
-    }
-  ]
-}
-  vmid = api.get_vm_uuid('nurancentos')
+  body =   {"operation": "MOUNT",
+  "override_guest": True}
+  vmid = "6d29a0f3-80b5-4d3c-bfb7-24b400325d19"
+  #vmid = api.get_vm_uuid('nurancentos')
   print vmid
-  snaps = api.vm_disks_detach(vmid, body)
+  snaps = api.vm_manage_guesttools(vmid, body)
   print snaps
   snaps = api.get_task_status(snaps['task_uuid'])
   print snaps

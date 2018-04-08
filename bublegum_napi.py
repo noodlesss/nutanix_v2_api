@@ -121,6 +121,19 @@ class nutanixApi(object):
         data = s.post(self.base_url + 'vms/%s/disks/detach' %vm_uuid, json=body, verify=False).json()
         return data
 
+    def vm_manage_guesttools(self, vm_uuid, body):
+        ''' body(required) = Mount and unmount guest tools on a given Virtual Machine. 
+            If override_guest is set to false and no empty CdRom is available on the guest VM, 
+            then the mount operation will fail. If override_guest is set to true then the mount 
+            operation succeeds by unmounting a non-empty CdRom.
+        '''
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/manage_vm_guest_tools' %vm_uuid, json=body, verify=False).json()
+        return data
+
 
     def vm_change_power_state(self, vm_uuid, power_state):
         power_state_list = { 'ON': 'ON', 'OFF': 'OFF', "POWERCYCLE": 'POWERCYCLE', "RESET": 'RESET',
