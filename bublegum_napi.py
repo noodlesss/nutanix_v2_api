@@ -191,6 +191,7 @@ class nutanixApi(object):
             data = s.post(self.base_url + 'vms/%s/restore' %(vm_uuid), json=body ,verify=False)
         return data
 
+
     def vm_change_power_state(self, vm_uuid, power_state):
         power_state_list = { 'ON': 'ON', 'OFF': 'OFF', "POWERCYCLE": 'POWERCYCLE', "RESET": 'RESET',
       "PAUSE": 'PAUSE', "SUSPEND": 'SUSPEND', "RESUME": "RESUME",
@@ -207,6 +208,31 @@ class nutanixApi(object):
         #print data.text
         return data
 
+    def vm_nics_del(self, vm_uuid, nic_id):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        try:
+            data = s.delete(self.base_url + 'vms/%s/nics/%s' %(vm_uuid, nic_id), verify=False).json()
+        except Exception as e:
+            print e
+            data = s.delete(self.base_url + 'vms/%s/nics/%s' %(vm_uuid, nic_id), verify=False)
+            return data.text
+        return data
+
+    def vm_get_nic(self, vm_uuid, nic_id):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        try:
+            data = s.get(self.base_url + 'vms/%s/nics/%s' %(vm_uuid, nic_id), verify=False).json()
+        except Exception as e:
+            print e
+            data = s.get(self.base_url + 'vms/%s/nics/%s' %(vm_uuid, nic_id), verify=False)
+            return data.text
+        return data
 
 #---------> Task Operations 
 #####
