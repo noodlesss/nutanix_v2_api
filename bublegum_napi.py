@@ -44,12 +44,13 @@ class nutanixApi(object):
         return data
 
 
-    def get_vm(self, vm_uuid):
+    def get_vm(self, vm_uuid, include_vm_disk_config=False, include_vm_nic_config=False):
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
-        data = s.get(self.base_url + 'vms/%s' %vm_uuid, verify=False).json()
+        data = s.get(self.base_url + 'vms/%s' %vm_uuid, params={'include_vm_disk_config': include_vm_disk_config, 'include_vm_nic_config': include_vm_nic_config},
+         verify=False)
         return data
 
 
@@ -89,7 +90,7 @@ class nutanixApi(object):
 
 
     def vm_clone(self, vm_uuid, body=None):
-        ''' body(optional) = clone machine parameters'''
+        ''' body(required) = clone machine parameters'''
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
@@ -111,7 +112,7 @@ class nutanixApi(object):
 
 
     def vm_disks_detach(self, vm_uuid, body):
-        ''' body(required) = info about the virtual disks or CD-Roms to be detached. At least disk UUID or combination 
+        ''' body(required) = info about the virtual disks or CD-Roms to be detached. Disk UUID or combination 
         of device index and adapter type must be provided.
         '''
         requests.packages.urllib3.disable_warnings()
@@ -204,7 +205,7 @@ class nutanixApi(object):
         s.auth = (self.username, self.password)
         body = {'transition': power_state}
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
-        data = s.post(self.base_url + 'vms/%s/set_power_state/' %vm_uuid, json=body, verify=False).json()
+        data = s.post(self.base_url + 'vms/%s/set_power_state/' %vm_uuid, json=body, verify=False)
         #print data.text
         return data
 
@@ -233,6 +234,23 @@ class nutanixApi(object):
             data = s.get(self.base_url + 'vms/%s/nics/%s' %(vm_uuid, nic_id), verify=False)
             return data.text
         return data
+
+    def vm_migrate(self, vm_uuid, host_uuid):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        body = {"hostUuid":"048a3100-e071-4197-a065-db81bd299803"}
+        data = s.post(self.base_url + 'vms/%s/migrate/' %vm_uuid, json=body, verify=False)
+#        try:
+#            data = s.post(self.base_url + 'vms/%s/migrate/' %vm_uuid, params=body, verify=False).json()
+#            print data
+#        except Exception as e:
+#            print 'error: %s' %e
+#            data = s.post(self.base_url + 'vms/%s/migrate/' %vm_uuid, params=body, verify=False)
+#            return data
+        return data
+
 
 #---------> Task Operations 
 #####
@@ -311,10 +329,10 @@ class nutanixApi(object):
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
         parameters = {"count": count}
         try:
-            data = s.get(self.base_url + 'protection_domains/%s/dr_snapshots' %pd_name, verify=False).json()
+            data = s.get(self.base_url + 'protection_domains/%s/dr_snapshots' %pd_name, params=filter_criteria,  verify=False).json()
         except Exception as e:
             print e
             data = s.get(self.base_url + 'protection_domains/%s/dr_snapshots' %pd_name, verify=False)
         return data
-
+#https://opengrok.eng.nutanix.com/source/xref/euphrates-5.6-stable/prism/rest_definitions/rest_definition_v2/src/main/java/com/nutanix/prism/services/v2/vmmanagement/VMAdministration.java
     
