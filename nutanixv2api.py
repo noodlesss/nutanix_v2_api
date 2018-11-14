@@ -91,3 +91,40 @@ class nutanixApi(object):
         body = {"hostUuid": host_uuid}
         data = s.post(self.base_url + 'vms/%s/migrate/' %vm_uuid, json=body, verify=False)
         return data
+
+    def vm_change_power_state(self, vm_uuid, body):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/set_power_state/' %vm_uuid, json=body, verify=False)
+        return data
+
+    def vm_restore(self, vm_uuid, body=None):
+        '''snap_uuid is required field in body'''
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/restore' %(vm_uuid), json=body ,verify=False)
+        return data
+
+    def vm_add_nics(self, vm_uuid, body=None):
+        '''network_uuid is required field'''
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + 'vms/%s/nics' %vm_uuid, json=body ,verify=False)
+        return data
+
+
+## Alerts
+
+    def get_alerts(self):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.get(self.base_url + 'alerts/', verify=False)
+        return data
