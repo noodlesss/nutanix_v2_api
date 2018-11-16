@@ -84,6 +84,7 @@ class nutanixApi(object):
 
 
     def vm_migrate(self, vm_uuid, host_uuid):
+        # works only with v0.8 api
         requests.packages.urllib3.disable_warnings()
         s = requests.Session()
         s.auth = (self.username, self.password)
@@ -116,6 +117,16 @@ class nutanixApi(object):
         s.auth = (self.username, self.password)
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
         data = s.post(self.base_url + 'vms/%s/nics' %vm_uuid, json=body ,verify=False)
+        return data
+
+## SNAPSHOT operations
+
+    def snapshot_vm(self, body):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + '/snapshots/', json=body ,verify=False)
         return data
 
 
