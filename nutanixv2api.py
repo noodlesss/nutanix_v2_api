@@ -129,6 +129,15 @@ class nutanixApi(object):
         data = s.post(self.base_url + '/snapshots/', json=body ,verify=False)
         return data
 
+## Network operations
+
+    def network_create(self, body):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        data = s.post(self.base_url + '/networks/', json=body ,verify=False)
+        return data
 
 ## Alerts
 
